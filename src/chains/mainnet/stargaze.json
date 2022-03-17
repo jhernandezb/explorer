@@ -1,6 +1,8 @@
 {
   "chain_name": "stargaze",
-  "api": ["https://rest.big-bang-1.stargaze-apis.com"],
+  "api": [
+    "https://rest.castor-1.stargaze-apis.com"
+  ],
   "sdk_version": "0.45.1",
   "coin_type": "118",
   "min_tx_fee": "800",
