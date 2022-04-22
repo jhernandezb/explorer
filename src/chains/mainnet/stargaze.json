@@ -1,9 +1,9 @@
 {
   "chain_name": "stargaze",
   "api": [
-    "https://rest.castor-1.stargaze-apis.com"
+    "https://rest.double-double-1.stargaze-apis.com"
   ],
-  "sdk_version": "0.45.1",
+  "sdk_version": "0.45.2",
   "coin_type": "118",
   "min_tx_fee": "800",
   "addr_prefix": "stars",
