@@ -1,0 +1,25 @@
+{
+    "chain_name": "stargaze",
+    "coingecko": "stargaze",
+    "api": [
+        "https://rest.fang-1.stargaze-apis.com"
+    ],
+    "rpc": [
+        "https://rpc.fang-1.stargaze-apis.com:443"
+    ],
+    "snapshot_provider": "",
+    "sdk_version": "0.47.10",
+    "coin_type": "118",
+    "min_tx_fee": "800",
+    "addr_prefix": "stars",
+    "logo": "/logos/stargaze.svg",
+    "assets": [
+        {
+            "base": "ustars",
+            "symbol": "STARS",
+            "exponent": "6",
+            "coingecko_id": "stargaze",
+            "logo": "/logos/stargaze.svg"
+        }
+    ]
+}
