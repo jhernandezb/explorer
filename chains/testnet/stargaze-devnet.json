@@ -1,5 +1,5 @@
 {
-    "chain_name": "stargaze",
+    "chain_name": "stargaze-devnet",
     "coingecko": "stargaze",
     "api": [
         "https://rest.fang-1.stargaze-apis.com"
