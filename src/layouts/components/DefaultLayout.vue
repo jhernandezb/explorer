@@ -7,8 +7,9 @@ import newFooter from '@/layouts/components/NavFooter.vue';
 import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue';
 import NavbarSearch from '@/layouts/components/NavbarSearch.vue';
 import ChainProfile from '@/layouts/components/ChainProfile.vue';
+import Sponsors from '@/layouts/components/Sponsors.vue';
 
-import { useDashboard } from '@/stores/useDashboard';
+import { NetworkType, useDashboard } from '@/stores/useDashboard';
 import { useBaseStore, useBlockchain } from '@/stores';
 
 import NavBarI18n from './NavBarI18n.vue';
@@ -143,7 +144,7 @@ dayjs()
               {{ item?.badgeContent }}
             </div>
           </div>
-          <div class="collapse-content">
+          <div class="collapse-content">            
             <div v-for="(el, key) of item?.children" class="menu bg-base-100 w-full !p-0">
               <RouterLink
                 v-if="isNavLink(el)"
@@ -178,6 +179,26 @@ dayjs()
                   }"
                 >
                   {{ item?.title === 'Favorite' ? el?.title : $t(el?.title) }}
+                </div>
+              </RouterLink>
+            </div>
+            <div v-if="index === 0 && dashboard.networkType === NetworkType.Testnet" class="menu bg-base-100 w-full !p-0">
+              <RouterLink 
+              class="hover:bg-gray-100 dark:hover:bg-[#373f59] rounded cursor-pointer px-3 py-2 flex items-center"
+              :to="`/${blockchain.chainName}/faucet`">
+                <Icon
+                  icon="mdi:chevron-right"
+                  class="mr-2 ml-3"
+                  ></Icon>
+                <div
+                  class="text-base capitalize text-gray-500 dark:text-gray-300"
+                >
+                  Faucet
+                </div>
+                <div
+                  class="badge badge-sm text-white border-none badge-error ml-auto" 
+                >
+                  New
                 </div>
               </RouterLink>
             </div>
@@ -241,51 +262,7 @@ dayjs()
           <div class="px-4 text-sm pt-2 text-gray-400 pb-2 uppercase">
           {{ $t('module.sponsors') }}
         </div>
-        <a
-          href="https://osmosis.zone"
-          target="_blank"
-          class="py-2 px-4 flex items-center cursor-pointer rounded-lg hover:bg-gray-100 dark:hover:bg-[#373f59]"
-        >
-          <img
-            src="https://ping.pub/logos/osmosis.jpg"
-            class="w-6 h-6 rounded-full mr-3"
-          />
-          <div
-            class="text-sm capitalize flex-1 text-gray-600 dark:text-gray-200"
-          >
-            Osmosis
-          </div>
-        </a>
-        <a
-          href="https://celestia.org"
-          target="_blank"
-          class="py-2 px-4 flex items-center cursor-pointer rounded-lg hover:bg-gray-100 dark:hover:bg-[#373f59]"
-        >
-          <img
-            src="https://ping.pub/logos/celestia.png"
-            class="w-6 h-6 rounded-full mr-3"
-          />
-          <div
-            class="text-sm capitalize flex-1 text-gray-600 dark:text-gray-200"
-          >
-            Celestia
-          </div>
-        </a>
-        <a
-          href="https://becole.com"
-          target="_blank"
-          class="py-2 px-4 flex items-center cursor-pointer rounded-lg hover:bg-gray-100 dark:hover:bg-[#373f59]"
-        >
-          <img
-            src="https://becole.com/static/logo/logo_becole.png"
-            class="w-6 h-6 rounded-full mr-3"
-          />
-          <div
-            class="text-sm capitalize flex-1 text-gray-600 dark:text-gray-200"
-          >
-            Becole
-          </div>
-        </a>
+        <Sponsors />
         <div class="px-4 text-sm pt-2 text-gray-400 pb-2 uppercase">{{ $t('module.links') }}</div>
         <a
           href="https://twitter.com/ping_pub"

@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { parseCoins } from '@cosmjs/stargate';
 import {
+  useBankStore,
   useBlockchain,
+  useDistributionStore,
   useFormatter,
   useMintStore,
   useStakingStore,
@@ -63,12 +66,12 @@ blockchain.rpc.getTxsBySender(addresses.value.account).then((x) => {
 });
 
 const apr = computed(() => {
-  const rate = v.value.commission?.commission_rates.rate || 0;
+  const rate = Number(v.value.commission?.commission_rates.rate || 0);
   const inflation = useMintStore().inflation;
-  if (Number(inflation)) {
-    return format.percent((1 - Number(rate)) * Number(inflation));
-  }
-  return '-';
+  const communityTax = Number(useDistributionStore().params.community_tax);
+  const bondedRatio = Number(staking.pool.bonded_tokens) / Number(useBankStore().supply.amount);
+
+  return format.percent((1 - communityTax) * (1 - rate) * Number(inflation) / bondedRatio);
 });
 
 const selfRate = computed(() => {
@@ -222,24 +225,29 @@ pagePowerEvents(1)
 
 function mapEvents(events: {type: string, attributes: {key: string, value: string}[]}[]) {
   const attributes = events
-    .filter(x => x.type=== selectedEventType.value)
-      .filter(x => x.attributes.findIndex(attr => attr.value === validator || attr.value === toBase64(stringToUint8Array(validator))) > -1)
-      .map(x => {
-    // check if attributes need to decode
-    const output = {} as {[key: string]: string }
+    .filter(x => x.type === selectedEventType.value)
+    .filter(x => x.attributes.findIndex(attr => attr.value === validator || attr.value === toBase64(stringToUint8Array(validator))) > -1)
+    .map(x => {
+      // check if attributes need to decode
+      const output = {} as {[key: string]: string }
 
-    if(x.attributes.findIndex(a => a.key === `amount`) > -1) {
-      x.attributes.forEach(attr => {
-        output[attr.key] = attr.value
-      })
-    } else x.attributes.forEach(attr => {
-      output[uint8ArrayToString(fromBase64(attr.key))] = uint8ArrayToString(fromBase64(attr.value))
-    })
-    return output
-  })  
+      if (x.attributes.findIndex(a => a.key === `amount`) > -1) {
+        x.attributes.forEach(attr => {
+          output[attr.key] = attr.value
+        })
+      } else {
+        x.attributes.forEach(attr => {
+          output[uint8ArrayToString(fromBase64(attr.key))] = uint8ArrayToString(fromBase64(attr.value))
+        })
+      };
 
-  return attributes
+      return output;
+    });
 
+  const coinsAsString = attributes.map((x: any) => x.amount).join(',');
+  const coins = parseCoins(coinsAsString);
+
+  return coins.map(coin => format.formatToken(coin)).join(', ');
 }
 
 function mapDelegators(messages: any[]) {
@@ -678,7 +686,7 @@ function mapDelegators(messages: any[]) {
                   <RouterLink :to="`/${props.chain}/tx/${item.txhash}`">
                     <span class="mr-2">
                       {{ (selectedEventType === EventType.Delegate ? '+' : '-')}} {{
-                      mapEvents(item.events).map((x: any) => x.amount).join(", ")
+                      mapEvents(item.events)
                     }}</span>
                   </RouterLink>
                   <Icon

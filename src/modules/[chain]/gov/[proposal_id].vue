@@ -32,7 +32,7 @@ const stakingStore = useStakingStore();
 const chainStore = useBlockchain();
 
 store.fetchProposal(props.proposal_id).then((res) => {
-  const proposalDetail = reactive(res.proposal);
+  let proposalDetail = reactive(res.proposal);
   // when status under the voting, final_tally_result are no data, should request fetchTally
   if (res.proposal?.status === 'PROPOSAL_STATUS_VOTING_PERIOD') {
     store.fetchTally(props.proposal_id).then((tallRes) => {
@@ -55,7 +55,7 @@ store.fetchProposal(props.proposal_id).then((res) => {
     })
   }
 
-  const msgType = proposalDetail.content['@type'] || '';
+  const msgType = proposalDetail.content?.['@type'] || '';
   if(msgType.endsWith('MsgUpdateParams')) {
     if(msgType.indexOf('staking') > -1) {
       chainStore.rpc.getStakingParams().then((res) => {
@@ -128,7 +128,7 @@ const upgradeCountdown = computed((): number => {
   if (height > 0) {
     const base = useBaseStore();
     const current = Number(base.latest?.block?.header?.height || 0);
-    return (height - current) * 6 * 1000;
+    return (height - current) * Number((base.blocktime / 1000).toFixed()) * 1000;
   }
   const now = new Date();
   const end = new Date(proposal.value.content?.plan?.time || '');
@@ -214,7 +214,12 @@ function pageload(p: number) {
 }
 
 function metaItem(metadata: string|undefined): { title: string; summary: string } {
-  return metadata ? JSON.parse(metadata) : {}
+  if (!metadata) {
+    return { title: '', summary: '' }
+  } else if (metadata.startsWith('{') && metadata.endsWith('}')) {
+    return JSON.parse(metadata)
+  }
+  return { title: metadata, summary: '' }
 }
 </script>
 
